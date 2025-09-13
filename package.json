@@ -1,7 +1,7 @@
 {
   "name": "ellebot",
-  "version": "1.0.0",
-  "description": "Dark & sassy Telegram bot – Elle’s vibe only 🖤",
+  "version": "2.0.0",
+  "description": "Dark & sassy Telegram bot – powered by Gemini 🖤",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "express": "^4.19.2",
-    "node-telegram-bot-api": "^0.64.0"
+    "node-telegram-bot-api": "^0.64.0",
+    "@google/generative-ai": "^0.15.0"
   }
 }
