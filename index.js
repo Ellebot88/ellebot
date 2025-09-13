@@ -1,79 +1,71 @@
-// === ElleBot: dark + sassy ===
+// === ElleBot + Gemini ===
 const TelegramBot = require("node-telegram-bot-api");
 const express = require("express");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
+// Env
 const token = process.env.TELEGRAM_TOKEN;
+const geminiKey = process.env.GEMINI_API_KEY;
+
 if (!token) {
-  console.error("Missing TELEGRAM_TOKEN. Set it in Render > Environment.");
+  console.error("❌ Missing TELEGRAM_TOKEN");
   process.exit(1);
 }
+if (!geminiKey) {
+  console.error("⚠️ Missing GEMINI_API_KEY (บอทจะตอบไม่ได้)");
+}
 
-// polling = ง่ายสุด ไม่ต้องตั้ง webhook
 const bot = new TelegramBot(token, { polling: true });
+const genAI = geminiKey ? new GoogleGenerativeAI(geminiKey) : null;
+const model = genAI ? genAI.getGenerativeModel({ model: "gemini-1.5-flash" }) : null;
 
-// ──────────── สไตล์ตอบโต้ ────────────
-const brand = "⚡️ ElleBot";
-const helloLines = [
-  "สวัสดีค่ะ น้องดื้อเรียกพี่หรอ 😏",
-  "มีไรคะ คนสวยว่างให้ 3 นาที 💅",
-  "ว่าไง กล้าแชทมาก็ดี กล้ารวยด้วยหรือยัง 💸"
-];
+// ฟังก์ชันเรียก Gemini
+async function aiReply(text) {
+  if (!model) return "ยังไม่ได้ใส่ GEMINI_API_KEY ค่ะ";
+  try {
+    const result = await model.generateContent(text);
+    return result.response.text();
+  } catch (err) {
+    console.error("Gemini error:", err);
+    return "AI งอแงอยู่ค่ะ 😅";
+  }
+}
 
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-// /start
+// ── Commands ──
 bot.onText(/^\/start$/, (msg) => {
-  const name = msg.from.first_name || "you";
   bot.sendMessage(
     msg.chat.id,
-    `${brand}\n\nเฮ้ย ${name} มาถูกที่ละ\n/commands – เมนูคำสั่ง\n/checkin – เช็กอินสวยๆ\n/vibe – สเตตัสดาร์กๆเท่ๆ\n/help – งงอะไรร้องมา`,
-    { disable_web_page_preview: true }
+    `⚡️ ElleBot พร้อมคุยแล้ว!\n\n/ask <ข้อความ> – ให้ Gemini ตอบ\n/vibe – ส่งแคปชันดาร์กๆ\n/ping – เช็กว่าบอทยังตื่นอยู่`
   );
 });
 
-// /commands
-bot.onText(/^\/commands$/, (msg) => {
-  bot.sendMessage(msg.chat.id,
-`🖤 คำสั่งหลัก
-/start – เริ่ม
-/commands – เมนู
-/checkin – เช็กอินทำงาน (ลุคคูล)
-/vibe – ส่งแคปชันดาร์กๆหนึ่งดอก
-/ping – ทดสอบว่าบอทตื่นอยู่ไหม
-/help – วิธีใช้`,
-  );
+bot.onText(/^\/ask (.+)/, async (msg, match) => {
+  const q = match[1];
+  const reply = await aiReply(q);
+  bot.sendMessage(msg.chat.id, reply);
 });
 
-// /checkin
-bot.onText(/^\/checkin(?:\s+(.+))?$/, (msg, match) => {
-  const note = (match && match[1]) ? match[1] : "เข้าทำงานแบบคูลๆ";
-  bot.sendMessage(msg.chat.id, `✅ เช็กอินเรียบร้อย: ${note}\n#TeamElle`);
-});
-
-// /vibe – ส่งประโยคดาร์กๆกวนๆ
 bot.onText(/^\/vibe$/, (msg) => {
   const vibes = [
     "ใจเย็นแต่ไม่เย่อหยิ่ง แพงแต่ไม่พูดเยอะ 🖤",
-    "ไม่ต้องตะโกนดัง—คนแพงเขาได้ยินกันในใจ 😌",
-    "เงียบให้สุด แล้วคมให้จำ. ⚔️",
-    "ชอบคนจริงใจ ที่เหลือพักก่อนค่ะ 💋",
-    "วันนี้ไม่รับพลังลบ รับแต่เงินสด 💵"
+    "วันนี้ไม่รับพลังลบ รับแต่เงินสด 💵",
+    "ชอบคนจริงใจ ที่เหลือพักก่อนค่ะ 💋"
   ];
-  bot.sendMessage(msg.chat.id, pick(vibes));
+  bot.sendMessage(msg.chat.id, vibes[Math.floor(Math.random() * vibes.length)]);
 });
 
-// /ping
 bot.onText(/^\/ping$/, (msg) => bot.sendMessage(msg.chat.id, "pong 🦋"));
 
-// ตอบข้อความทั่วไปสั้นๆกวนๆ
-bot.on("message", (msg) => {
-  if (msg.text && !msg.text.startsWith("/")) {
-    bot.sendMessage(msg.chat.id, pick(helloLines));
-  }
+// ── ตอบข้อความทั่วไป ──
+bot.on("message", async (msg) => {
+  if (!msg.text || msg.text.startsWith("/")) return;
+  const reply = await aiReply(msg.text);
+  bot.sendMessage(msg.chat.id, reply);
 });
 
-// ──────────── web server (สำหรับ Render) ────────────
+// ── Web server for Render ──
 const app = express();
-app.get("/", (_, res) => res.send("ElleBot is running. 🖤"));
+app.get("/", (req, res) => res.send("ElleBot (Gemini) is running 🖤"));
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`HTTP ok on ${PORT}`));
+app.listen(PORT, () => console.log(`HTTP server running on ${PORT}`));
+
