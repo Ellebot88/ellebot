@@ -1,9 +1,11 @@
-// === ElleBot + Gemini ===
+// === ElleBot x Gemini ===
+// โหมดดาร์กๆ กวนๆ แบบ Elle 🖤
+
 const TelegramBot = require("node-telegram-bot-api");
 const express = require("express");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Env
+// ===== Env =====
 const token = process.env.TELEGRAM_TOKEN;
 const geminiKey = process.env.GEMINI_API_KEY;
 
@@ -12,60 +14,49 @@ if (!token) {
   process.exit(1);
 }
 if (!geminiKey) {
-  console.error("⚠️ Missing GEMINI_API_KEY (บอทจะตอบไม่ได้)");
+  console.error("❌ Missing GEMINI_API_KEY");
+  process.exit(1);
 }
 
+// ===== Setup =====
 const bot = new TelegramBot(token, { polling: true });
-const genAI = geminiKey ? new GoogleGenerativeAI(geminiKey) : null;
-const model = genAI ? genAI.getGenerativeModel({ model: "gemini-1.5-flash" }) : null;
+const genAI = new GoogleGenerativeAI(geminiKey);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-// ฟังก์ชันเรียก Gemini
-async function aiReply(text) {
-  if (!model) return "ยังไม่ได้ใส่ GEMINI_API_KEY ค่ะ";
-  try {
-    const result = await model.generateContent(text);
-    return result.response.text();
-  } catch (err) {
-    console.error("Gemini error:", err);
-    return "AI งอแงอยู่ค่ะ 😅";
-  }
-}
+const app = express();
+const PORT = process.env.PORT || 10000;
 
-// ── Commands ──
-bot.onText(/^\/start$/, (msg) => {
+app.get("/", (req, res) => {
+  res.send("ElleBot is alive 🖤");
+});
+
+app.listen(PORT, () => {
+  console.log(`⚡ Server running on port ${PORT}`);
+});
+
+// ===== Telegram Bot =====
+bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    `⚡️ ElleBot พร้อมคุยแล้ว!\n\n/ask <ข้อความ> – ให้ Gemini ตอบ\n/vibe – ส่งแคปชันดาร์กๆ\n/ping – เช็กว่าบอทยังตื่นอยู่`
+    "🌑 ElleBot โหมดดาร์กพร้อมใช้งาน\nแค่พิมพ์อะไรมา เดี๋ยวตอบกวนๆให้เอง 😏"
   );
 });
 
-bot.onText(/^\/ask (.+)/, async (msg, match) => {
-  const q = match[1];
-  const reply = await aiReply(q);
-  bot.sendMessage(msg.chat.id, reply);
-});
-
-bot.onText(/^\/vibe$/, (msg) => {
-  const vibes = [
-    "ใจเย็นแต่ไม่เย่อหยิ่ง แพงแต่ไม่พูดเยอะ 🖤",
-    "วันนี้ไม่รับพลังลบ รับแต่เงินสด 💵",
-    "ชอบคนจริงใจ ที่เหลือพักก่อนค่ะ 💋"
-  ];
-  bot.sendMessage(msg.chat.id, vibes[Math.floor(Math.random() * vibes.length)]);
-});
-
-bot.onText(/^\/ping$/, (msg) => bot.sendMessage(msg.chat.id, "pong 🦋"));
-
-// ── ตอบข้อความทั่วไป ──
 bot.on("message", async (msg) => {
-  if (!msg.text || msg.text.startsWith("/")) return;
-  const reply = await aiReply(msg.text);
-  bot.sendMessage(msg.chat.id, reply);
+  const chatId = msg.chat.id;
+  const text = msg.text;
+
+  if (text.startsWith("/start")) return; // กันซ้ำ
+
+  try {
+    const result = await model.generateContent(text);
+    const reply = result.response.text();
+
+    bot.sendMessage(chatId, `🖤 ${reply}`);
+  } catch (err) {
+    console.error("Gemini API Error:", err);
+    bot.sendMessage(chatId, "❌ บอทกวนตีน error แป๊บ ลองใหม่ทีนะ");
+  }
 });
 
-// ── Web server for Render ──
-const app = express();
-app.get("/", (req, res) => res.send("ElleBot (Gemini) is running 🖤"));
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`HTTP server running on ${PORT}`));
 
