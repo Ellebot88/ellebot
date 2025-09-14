@@ -1,15 +1,12 @@
 {
-  "name": "ellebot-th-vi-sassy",
+  "name": "ellebot",
   "version": "1.0.0",
-  "description": "Telegram bot TH/VI glam + dark humor (webhook, no 409).",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "engines": { "node": ">=18" },
   "dependencies": {
-    "@google/generative-ai": "^0.15.0",
-    "express": "^4.19.2",
-    "node-telegram-bot-api": "^0.64.0"
+    "express": "^4.18.2",
+    "node-telegram-bot-api": "^0.61.0"
   }
 }
