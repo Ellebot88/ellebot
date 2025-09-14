@@ -1,7 +1,7 @@
 {
-  "name": "ellebot-office-th-vi",
+  "name": "ellebot-office-thai-max",
   "version": "1.0.0",
-  "description": "Thai/Vietnamese office persona bot (Newton/Tyra/Dream/Jisak). Resilient boot, webhook/polling auto.",
+  "description": "Thai-only office persona bot (Newton/Tyra/Dream/Jisak). Modes: gentle/sassy/spicy. Auto webhook/polling.",
   "main": "index.js",
   "scripts": { "start": "node index.js" },
   "engines": { "node": ">=18" },
