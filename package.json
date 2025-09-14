@@ -1,7 +1,7 @@
 {
   "name": "ellebot",
-  "version": "2.1.0",
-  "description": "Thai-only, short & sassy Telegram bot powered by Gemini",
+  "version": "2.2.0",
+  "description": "Thai/Isan short & sassy Telegram bot powered by Gemini",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
