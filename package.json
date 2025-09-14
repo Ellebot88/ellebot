@@ -1,7 +1,7 @@
 {
-  "name": "ellebot",
-  "version": "2.2.0",
-  "description": "Thai/Isan short & sassy Telegram bot powered by Gemini",
+  "name": "ellebot-th-vi-sassy",
+  "version": "1.0.0",
+  "description": "Telegram bot TH/VI glam + dark humor (webhook, no 409).",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
