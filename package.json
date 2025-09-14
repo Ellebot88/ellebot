@@ -1,13 +1,13 @@
 {
-  "name": "ellebot-resilient",
+  "name": "ellebot-office-th-vi",
   "version": "1.0.0",
-  "description": "TH/VI sassy bot with resilient boot (webhook/polling auto).",
+  "description": "Thai/Vietnamese office persona bot (Newton/Tyra/Dream/Jisak). Resilient boot, webhook/polling auto.",
   "main": "index.js",
   "scripts": { "start": "node index.js" },
   "engines": { "node": ">=18" },
   "dependencies": {
     "express": "^4.19.2",
-    "node-telegram-bot-api": "^0.64.0",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "node-telegram-bot-api": "^0.64.0"
   }
 }
