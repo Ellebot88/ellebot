@@ -1,13 +1,13 @@
 {
-  "name": "ellebot-th",
+  "name": "ellebot-thai",
   "version": "1.0.0",
-  "description": "ElleBot ภาษาไทยล้วน ๆ เริ่ด ๆ กวน ๆ สไตล์ออฟฟิศ",
+  "description": "ElleBot Thai only — sassy, funny, office-style with keyword replies",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
+    "express": "^4.18.2",
     "node-telegram-bot-api": "^0.66.0"
   },
   "engines": {
