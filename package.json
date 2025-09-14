@@ -1,13 +1,16 @@
 {
-  "name": "ellebot-office-thai-max",
+  "name": "ellebot-th",
   "version": "1.0.0",
-  "description": "Thai-only office persona bot (Newton/Tyra/Dream/Jisak). Modes: gentle/sassy/spicy. Auto webhook/polling.",
+  "description": "ElleBot ภาษาไทยล้วน ๆ เริ่ด ๆ กวน ๆ สไตล์ออฟฟิศ",
   "main": "index.js",
-  "scripts": { "start": "node index.js" },
-  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "express": "^4.19.2",
-    "node-fetch": "^3.3.2",
-    "node-telegram-bot-api": "^0.64.0"
+    "node-telegram-bot-api": "^0.66.0"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }
